@@ -15,6 +15,7 @@ import 'components/offer_slider.dart';
 import 'components/popular_product.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
   static String routeName = '/';
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -59,20 +60,43 @@ class _HomeScreenState extends State<HomeScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('آیا میخواید از برنامه خارج شوید؟'),
-            content: Text('برای خروج از برنامه دکمه بستن را بزنید.'),
+            title: const Text(
+              'آیا میخواید از برنامه خارج شوید؟',
+              style: TextStyle(fontFamily: "Iransans"),
+            ),
+            // content: const Text('برای خروج از برنامه دکمه بستن را بزنید.'),
             actions: <Widget>[
-              TextButton(
-                child: Text('لغو'),
-                onPressed: () {
-                  Navigator.of(context).pop(false);
-                },
-              ),
-              TextButton(
-                child: Text('بستن'),
-                onPressed: () {
-                  exit(0);
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    child: const Text(
+                      'بله',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "Iransans",
+                          color: Colors.green),
+                    ),
+                    onPressed: () {
+                      exit(0);
+                    },
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  TextButton(
+                    child: const Text(
+                      'خیر',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: "Iransans",
+                          color: Colors.red),
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                  ),
+                ],
               ),
             ],
           );
@@ -80,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   checkOffer() {
-    for (WooProduct  i in Brain.publicProductList) {
+    for (WooProduct i in Brain.publicProductList) {
       if (i.dateOnSaleTo != null) {
         setState(() {
           hasOffer = true;
@@ -107,13 +131,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     getOrders();
 
-    //<---
     return WillPopScope(
       onWillPop: () async {
         bool? result = await onBackPressed();
-        if (result == null) {
-          result = false;
-        }
+        result ??= false;
         return result;
       },
       child: Scaffold(

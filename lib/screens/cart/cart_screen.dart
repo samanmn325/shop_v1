@@ -3,10 +3,16 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:shop_v1/screens/welcome/welcome_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:uni_links/uni_links.dart';
 import 'package:woocommerce/models/cart_item.dart';
 import 'package:woocommerce/models/order_payload.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:zarinpal/zarinpal.dart';
 
 import '../../components/default_button.dart';
 import '../../net/brain.dart';
@@ -16,11 +22,6 @@ import '../../net/payment_result.dart';
 import '../../screens/home/home_screen.dart';
 import '../../screens/login/login_popup.dart';
 import '../../screens/profile/components/edit_profile.dart';
-import 'package:flutter/material.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:zarinpal/zarinpal.dart';
 import '../../constants.dart';
 import '../../enums.dart';
 import 'components/cart_card.dart';
@@ -76,16 +77,14 @@ class _CartScreenState extends State<CartScreen> {
         _latestUri = uri;
         _err = null;
       });
-      final a = _latestUri!.queryParameters["Status"];
-      print(a);
-      final b = _latestUri?.queryParameters["Authority"];
-      print(b);
-      if (a != null && b != null) {}
-      ZarinPal().verificationPayment(a!, b!, _paymentRequest,
+      final status = _latestUri!.queryParameters["Status"];
+      final authority = _latestUri?.queryParameters["Authority"];
+      if (status != null && authority != null) {}
+      ZarinPal().verificationPayment(status!, authority!, _paymentRequest,
           (isPaymentSuccess, refID, paymentRequest) async {
         if (isPaymentSuccess) {
           // Payment Is Success
-          print("Success");
+          print("پرداخت موفق");
           List<WooCartItem> cartItem = context.watch<Data>().cartItem;
           for (int i = 0; i < cartItem.length; i++) {
             LineItems lineItem = LineItems(
@@ -111,7 +110,7 @@ class _CartScreenState extends State<CartScreen> {
           Navigator.pushNamed(context, PaymentResult.routeName,
               arguments: 'پرداخت موفق');
         } else {
-          print("Error");
+          print("خطا! پرداخت ناموفق");
           Navigator.pushNamed(context, PaymentResult.routeName,
               arguments: 'پرداخت ناموفق');
         }
@@ -271,9 +270,7 @@ class _CartScreenState extends State<CartScreen> {
       return WillPopScope(
         onWillPop: () async {
           bool? result = await _onBackPressed();
-          if (result == null) {
-            result = false;
-          }
+          result ??= false;
           return result;
         },
         child: ModalProgressHUD(
@@ -282,7 +279,7 @@ class _CartScreenState extends State<CartScreen> {
             appBar: AppBar(
               leading: IconButton(
                 iconSize: 40.0,
-                icon: Icon(Icons.arrow_left),
+                icon: kBackIcon,
                 onPressed: () {
                   Navigator.pop(context);
 
@@ -326,23 +323,15 @@ class _CartScreenState extends State<CartScreen> {
                       });
                     },
                     background: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       decoration: BoxDecoration(
-                        color: Color(0xFFFFE6E6),
+                        color: const Color(0xFFFFE6E6),
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                     child: Column(
                       children: [
                         CartCard(cartItem: data.cartItem[index], index: index),
-                        SizedBox(
-                            width: 170,
-                            child: ElevatedButton(
-                              child: Text('خرید'),
-                              onPressed: () {
-                                _payment(1000);
-                              },
-                            )),
                       ],
                     ),
                   ),
@@ -356,6 +345,12 @@ class _CartScreenState extends State<CartScreen> {
         ),
       );
     });
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(DiagnosticsProperty<Object?>('_err', _err));
   }
 }
 ///////////////////////////////////////////////////////////////////////////////////

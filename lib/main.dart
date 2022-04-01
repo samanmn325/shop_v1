@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -11,16 +10,17 @@ Future<void> main() async {
   runApp(ChangeNotifierProvider(
     create: (context) => Data(),
     child: MaterialApp(
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalCupertinoLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
-      supportedLocales: [
+      supportedLocales: const [
         Locale("fa", "IR"),
         Locale('en', ''),
       ],
-      locale: Locale("fa", "IR"),
+      debugShowCheckedModeBanner: false,
+      locale: const Locale("fa", "IR"),
       theme: theme(),
       initialRoute: WelcomeScreen.routeName,
       routes: routes,

@@ -54,6 +54,83 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return true;
   }
 
+  changeFunction() async {
+    EditProfileScreen.billing = Billing(
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        state: state,
+        city: city,
+        address1: address);
+    EditProfileScreen.customer = WooCustomer(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        billing: EditProfileScreen.billing);
+
+    if (isActive == false) {
+      isActive = true;
+      setState(() {});
+    } else {
+      setState(() {
+        showSpinner = true;
+      });
+      try {
+        Map<dynamic, dynamic> billing = {
+          'first_name': firstName,
+          'last_name': lastName,
+          'email': email,
+          'phone': phone,
+          'address_1': address,
+          'state': state,
+          'city': city,
+        };
+        Map<dynamic, dynamic> customerData = {
+          'avatar_url': avatarUrl,
+          'first_name': firstName,
+          'last_name': lastName,
+          'email': email,
+          'billing': billing,
+        };
+        Brain.customer = await NetworkHelper()
+            .wooCommerce
+            .updateCustomer(id: Brain.customer.id!, data: customerData);
+        print(Brain.customer);
+        if (email != null &&
+            firstName != null &&
+            lastName != null &&
+            phone != null &&
+            city != null &&
+            state != null &&
+            address != null &&
+            email != "" &&
+            firstName != "" &&
+            lastName != "" &&
+            phone != "" &&
+            city != "" &&
+            state != "" &&
+            address != "") {
+          Brain.isCustomerInfoFull = true;
+        } else {
+          Brain.isCustomerInfoFull = false;
+        }
+        kShowToast(context, 'باموفقیت ذخیره شد');
+      } catch (e) {
+        print(e);
+      }
+
+      // Creates a new Woocommerce customer and returns the WooCustomer object.
+
+      setState(() {
+        setState(() {
+          showSpinner = false;
+        });
+        isActive = false;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -65,160 +142,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return WillPopScope(
       onWillPop: () async {
         bool? result = await onBackPressed();
-        if (result == null) {
-          result = false;
-        }
+        result ??= false;
         return result;
       },
       child: ModalProgressHUD(
         inAsyncCall: showSpinner,
         child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              iconSize: 40.0,
-              icon: Icon(Icons.arrow_left),
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, ProfileScreen.routeName, (_) => false);
-              },
-            ),
-            toolbarHeight: 40,
-            title: Center(
-                child: Text("ویرایش اطلاعات",
-                    style: TextStyle(color: Colors.black87, fontSize: 24))),
-          ),
+          resizeToAvoidBottomInset: true,
           body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(vertical: 20),
             child: Column(
               children: [
+                // SizedBox(
+                //   height: MediaQuery.of(context).size.height * 0.1,
+                // ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.1,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.9,
-                  child: Column(
-                    children: [
-                      // ProfilePic(
-                      //   isEditAble: isActive,
-                      // ),
-                      SizedBox(height: 10),
-                      Column(
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Row(
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              nameField(firstName, isActive),
-                              SizedBox(
-                                width: 4,
-                              ),
-                              familyField(lastName, isActive),
-                            ],
+                          IconButton(
+                            iconSize: 40.0,
+                            icon: kBackIcon,
+                            onPressed: () {
+                              Navigator.pushNamedAndRemoveUntil(context,
+                                  ProfileScreen.routeName, (_) => false);
+                            },
                           ),
-                          emailField(email, isActive),
-                          phoneFiled(phone, isActive),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                stateField(state, isActive),
-                                SizedBox(
-                                  width: 4,
-                                ),
-                                cityFiled(city, isActive)
-                              ]),
-                          SizedBox(
-                            height: 4,
+                          const Padding(
+                            padding: EdgeInsets.only(right: 50.0),
+                            child: Text("ویرایش اطلاعات",
+                                style: TextStyle(
+                                    color: Colors.black87, fontSize: 24)),
                           ),
-                          addressField(address, isActive),
-                          Container(
-                            margin: EdgeInsets.only(left: 20, right: 20),
-                            child: DefaultButton(
-                              color: isActive ? Colors.green : kPrimaryColor,
-                              text: isActive ? "ذخیره" : "ویرایش",
-                              press: () async {
-                                EditProfileScreen.billing = Billing(
-                                    email: email,
-                                    firstName: firstName,
-                                    lastName: lastName,
-                                    phone: phone,
-                                    state: state,
-                                    city: city,
-                                    address1: address);
-                                EditProfileScreen.customer = WooCustomer(
-                                    firstName: firstName,
-                                    lastName: lastName,
-                                    email: email,
-                                    billing: EditProfileScreen.billing);
-
-                                if (isActive == false) {
-                                  isActive = true;
-                                  setState(() {});
-                                } else {
-                                  setState(() {
-                                    showSpinner = true;
-                                  });
-                                  try {
-                                    Map<dynamic, dynamic> billing = {
-                                      'first_name': firstName,
-                                      'last_name': lastName,
-                                      'email': email,
-                                      'phone': phone,
-                                      'address_1': address,
-                                      'state': state,
-                                      'city': city,
-                                    };
-                                    Map<dynamic, dynamic> customerData = {
-                                      'avatar_url': avatarUrl,
-                                      'first_name': firstName,
-                                      'last_name': lastName,
-                                      'email': email,
-                                      'billing': billing,
-                                    };
-                                    Brain.customer = await NetworkHelper()
-                                        .wooCommerce
-                                        .updateCustomer(
-                                            id: Brain.customer.id!,
-                                            data: customerData);
-                                    print(Brain.customer);
-                                    if (email != null &&
-                                        firstName != null &&
-                                        lastName != null &&
-                                        phone != null &&
-                                        city != null &&
-                                        state != null &&
-                                        address != null &&
-                                        email != "" &&
-                                        firstName != "" &&
-                                        lastName != "" &&
-                                        phone != "" &&
-                                        city != "" &&
-                                        state != "" &&
-                                        address != "") {
-                                      Brain.isCustomerInfoFull = true;
-                                    } else {
-                                      Brain.isCustomerInfoFull = false;
-                                    }
-                                    kShowToast(context, 'باموفقیت ذخیره شد');
-                                  } catch (e) {
-                                    print(e);
-                                  }
-
-                                  // Creates a new Woocommerce customer and returns the WooCustomer object.
-
-                                  setState(() {
-                                    setState(() {
-                                      showSpinner = false;
-                                    });
-                                    isActive = false;
-                                  });
-                                }
-                              },
-                            ),
-                          )
                         ],
                       ),
-                    ],
-                  ),
+                    )),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    nameField(firstName, isActive),
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    familyField(lastName, isActive),
+                  ],
                 ),
+                emailField(email, isActive),
+                phoneFiled(phone, isActive),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  stateField(state, isActive),
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  cityFiled(city, isActive)
+                ]),
+                const SizedBox(
+                  height: 4,
+                ),
+                addressField(address, isActive),
+                Container(
+                  margin: const EdgeInsets.only(left: 20, right: 20),
+                  child: DefaultButton(
+                      color: isActive ? Colors.green : kPrimaryColor,
+                      text: isActive ? "ذخیره" : "ویرایش",
+                      press: changeFunction),
+                )
               ],
             ),
           ),
@@ -233,10 +223,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Container nameField(String? name, bool? isWriteAble) {
     return Container(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 10),
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 10),
       width: MediaQuery.of(context).size.width * 0.45,
       decoration: BoxDecoration(
-          color: Color(0xFFF5F6F9), borderRadius: BorderRadius.circular(20)),
+          color: const Color(0xFFF5F6F9),
+          borderRadius: BorderRadius.circular(20)),
       child: TextFormField(
         initialValue: name,
         enabled: isWriteAble,
@@ -265,14 +256,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           return null;
         },
         decoration: InputDecoration(
-          focusedBorder: UnderlineInputBorder(
+          focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: kPrimaryColor)),
-          enabledBorder: UnderlineInputBorder(
+          enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: kPrimaryColor)),
           labelText: "نام",
-          labelStyle: TextStyle(color: kPrimaryColor),
+          labelStyle: const TextStyle(color: kPrimaryColor),
           hintText: "وارد کردن نام",
-          hintStyle: TextStyle(fontSize: 13),
+          hintStyle: const TextStyle(fontSize: 13),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           suffixIcon: CustomSurffixIcon(
               color: kPrimaryColor, svgIcon: "assets/icons/User icon.svg"),
@@ -283,10 +274,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Container familyField(String? family, bool? isWriteAble) {
     return Container(
-      padding: EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 10),
+      padding: const EdgeInsets.only(left: 20, right: 20, top: 5, bottom: 10),
       width: MediaQuery.of(context).size.width * 0.45,
       decoration: BoxDecoration(
-          color: Color(0xFFF5F6F9), borderRadius: BorderRadius.circular(20)),
+          color: const Color(0xFFF5F6F9),
+          borderRadius: BorderRadius.circular(20)),
       child: TextFormField(
         initialValue: family,
         enabled: isWriteAble,
@@ -315,14 +307,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           return null;
         },
         decoration: InputDecoration(
-          focusedBorder: UnderlineInputBorder(
+          focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: kPrimaryColor)),
-          enabledBorder: UnderlineInputBorder(
+          enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: kPrimaryColor)),
           labelText: "نام خانوادگی",
-          labelStyle: TextStyle(color: kPrimaryColor),
+          labelStyle: const TextStyle(color: kPrimaryColor),
           hintText: "وارد کردن فامیلی",
-          hintStyle: TextStyle(fontSize: 13),
+          hintStyle: const TextStyle(fontSize: 13),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           suffixIcon: CustomSurffixIcon(
               color: kPrimaryColor, svgIcon: "assets/icons/User icon.svg"),
@@ -333,10 +325,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Container emailField(String? email2, bool? isWriteAble) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
-          color: Color(0xFFF5F6F9), borderRadius: BorderRadius.circular(20)),
+          color: const Color(0xFFF5F6F9),
+          borderRadius: BorderRadius.circular(20)),
       child: TextFormField(
         initialValue: email2,
         enabled: isWriteAble,

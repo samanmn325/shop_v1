@@ -34,7 +34,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     try {
       final result = await InternetAddress.lookup('example.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('connected');
+        print('اتصال ایتنرنت برقرار است');
         setState(() {
           isTrying = false;
         });
@@ -45,7 +45,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           category = Brain.allProductList[i].categories;
           for (int c = 0; c < category.length; c++) {
             if (category2.every((item) => item.id != category[c].id)) {
-              if (category[c].name != 'دسته بندی نشده' && category[c].name != 'عقربه ای') {
+              if (category[c].name != 'دسته بندی نشده' &&
+                  category[c].name != 'عقربه ای') {
                 category2.add(category[c]);
               }
             }
@@ -55,7 +56,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           }
         }
 
-        // await Future.delayed(Duration(seconds: 60));
         Brain.productCategory = category2;
         // Brain.productCategory =
         //     await NetworkHelper().wooCommerce.getProductCategories();
@@ -65,7 +65,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         Navigator.pushNamed(context, HomeScreen.routeName);
       }
     } on SocketException catch (_) {
-      print('not connected');
+      print('اتصال اینترنت برقرار نیست');
       kShowToast(context, " اتصال به اینترت ندارید  \n دوباره تلاش کنید");
       setState(() {
         isTrying = true;

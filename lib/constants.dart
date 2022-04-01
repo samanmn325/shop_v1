@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
 const Color kBaseColor0 = Color(0xFFF5F6F9);
@@ -20,6 +21,10 @@ const Color kBaseColor4 = Color(0xff104581);
 const Color kBaseColor5 = Color(0xFFAA95FA);
 
 ///
+const kBackIcon = Icon(
+  FontAwesomeIcons.circleArrowRight,
+  color: Colors.grey,
+);
 
 /// kCheckPrice has two jobs :
 ///  1. convert currency to toman .

@@ -14,16 +14,16 @@ class _CheckoutCardState extends State<CheckoutCard> {
   @override
   Widget build(BuildContext context) {
     return Consumer<Data>(
-      builder: (context , data , child){
+      builder: (context, data, child) {
         return Container(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             vertical: 15,
             horizontal: 30,
           ),
           // height: 174,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(30),
               topRight: Radius.circular(30),
             ),
@@ -31,7 +31,7 @@ class _CheckoutCardState extends State<CheckoutCard> {
               BoxShadow(
                 offset: Offset(0, -15),
                 blurRadius: 20,
-                color: Color(0xFFDADADA).withOpacity(0.15),
+                color: const Color(0xFFDADADA).withOpacity(0.15),
               )
             ],
           ),
@@ -74,7 +74,7 @@ class _CheckoutCardState extends State<CheckoutCard> {
                         children: [
                           TextSpan(
                             text:
-                            "  ${kCheckPrice(data.totalPrice.toString())} تومان",
+                                "  ${kCheckPrice(data.totalPrice.toString())} تومان",
                             style: TextStyle(fontSize: 16, color: Colors.black),
                           ),
                         ],
