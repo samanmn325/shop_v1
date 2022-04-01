@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:shop_v1/screens/welcome/welcome_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:uni_links/uni_links.dart';
+import 'package:woocommerce/models/cart_item.dart';
+import 'package:woocommerce/models/order_payload.dart';
 
 import '../../components/default_button.dart';
 import '../../net/brain.dart';
@@ -37,11 +39,15 @@ class _CartScreenState extends State<CartScreen> {
   int amount = 0;
   int totalPrice = 0;
   bool showSpinner = false;
+  List<LineItems> lineItems = [];
+  // ??????????????????????????????????????????????????????????????????????????????
+  // ????????????????????????????????? start ???????????????????????????????????????
+
   StreamSubscription? _sub;
-  Uri? _initialUri;
   Uri? _latestUri;
   Object? _err;
   PaymentRequest _paymentRequest = PaymentRequest();
+
   _payment(int amount) async {
     _paymentRequest.setIsSandBox(true);
     _paymentRequest.setMerchantID("71d28f8c-9bbe-4f4d-a7ab-4ac45e5654a5");
@@ -76,32 +82,32 @@ class _CartScreenState extends State<CartScreen> {
       print(b);
       if (a != null && b != null) {}
       ZarinPal().verificationPayment(a!, b!, _paymentRequest,
-          (isPaymentSuccess, refID, paymentRequest) {
+          (isPaymentSuccess, refID, paymentRequest) async {
         if (isPaymentSuccess) {
           // Payment Is Success
           print("Success");
-          // List<WooCartItem> cartItem = context.watch<Data>().cartItem;
-          // for (int i = 0; i < cartItem.length; i++) {
-          //   LineItems lineItem = LineItems(
-          //       productId: cartItem[i].id,
-          //       name: cartItem[i].name,
-          //       quantity: cartItem[i].quantity);
-          //   lineItems.add(lineItem);
-          // }
-          // // WooOrderPayloadBilling billing = Brain.billing as WooOrderPayloadBilling;
-          // WooOrderPayloadBilling billing = WooOrderPayloadBilling(
-          //     firstName: Brain.billing.firstName,
-          //     lastName: Brain.billing.lastName,
-          //     email: Brain.billing.lastName,
-          //     phone: Brain.billing.phone,
-          //     state: Brain.billing.state,
-          //     city: Brain.billing.city,
-          //     address1: Brain.billing.address1);
-          // await NetworkHelper().wooCommerce.createOrder(WooOrderPayload(
-          //     status: 'completed',
-          //     customerId: Brain.customer.id,
-          //     billing: billing,
-          //     lineItems: lineItems));
+          List<WooCartItem> cartItem = context.watch<Data>().cartItem;
+          for (int i = 0; i < cartItem.length; i++) {
+            LineItems lineItem = LineItems(
+                productId: cartItem[i].id,
+                name: cartItem[i].name,
+                quantity: cartItem[i].quantity);
+            lineItems.add(lineItem);
+          }
+          // WooOrderPayloadBilling billing = Brain.billing as WooOrderPayloadBilling;
+          WooOrderPayloadBilling billing = WooOrderPayloadBilling(
+              firstName: Brain.billing.firstName,
+              lastName: Brain.billing.lastName,
+              email: Brain.billing.lastName,
+              phone: Brain.billing.phone,
+              state: Brain.billing.state,
+              city: Brain.billing.city,
+              address1: Brain.billing.address1);
+          await NetworkHelper().wooCommerce.createOrder(WooOrderPayload(
+              status: 'completed',
+              customerId: Brain.customer.id,
+              billing: billing,
+              lineItems: lineItems));
           Navigator.pushNamed(context, PaymentResult.routeName,
               arguments: 'پرداخت موفق');
         } else {
@@ -123,6 +129,9 @@ class _CartScreenState extends State<CartScreen> {
       });
     });
   }
+
+// ??????????????????????????????? end ??????????????????????????????????????
+// ??????????????????????????????????????????????????????????????????????????????
 
   ///_launchInBrowser is for launch url in external Browser(chrome & etc.).
   Future<void> _launchInBrowser(String url) async {
