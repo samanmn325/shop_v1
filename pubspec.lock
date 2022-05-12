@@ -577,8 +577,8 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "4c188f993da07e9cdbd4be9e4aefab77d3a9a06b"
-      url: "git://github.com/snoyan/woocommerce.git"
+      resolved-ref: "1eeb755f49ac3fbf3d819a6ca202230e89b57177"
+      url: "https://github.com/samanmn325/woocommerce.git"
     source: git
     version: "1.0.0"
   xdg_directories:
